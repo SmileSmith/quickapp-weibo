@@ -21,45 +21,13 @@
     "setInterval": false,
     "clearInterval": false
   },
-  "plugins": [
-    "hybrid"
-  ],
+  "plugins": ["hybrid"],
   "rules": {
-    "indent": [
-      "warn",
-      2
-    ],
-    "no-console": [
-      "warn",
-      {
-        "allow": [
-          "info",
-          "warn",
-          "error"
-        ]
-      }
-    ],
-    "no-unused-vars": [
-      "warn",
-      {
-        "varsIgnorePattern": "prompt"
-      }
-    ],
-    "quotes": [
-      "warn",
-      "single",
-      {
-        "avoidEscape": true,
-        "allowTemplateLiterals": true
-      }
-    ],
-    "linebreak-style": [
-      "warn",
-      "unix"
-    ],
-    "semi": [
-      "warn",
-      "never"
-    ]
+    "indent": ["warn", 2, { "SwitchCase": 1 }],
+    "no-console": ["warn", { "allow": ["info", "warn", "error"] }],
+    "no-unused-vars": ["warn", { "varsIgnorePattern": "prompt" }],
+    "quotes": ["warn", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
+    "semi": ["warn", "always"],
+    "linebreak-style": "off"
   }
 }

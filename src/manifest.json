@@ -1,6 +1,6 @@
 {
-  "package": "com.application.demo",
-  "name": "quickApp",
+  "package": "com.smilesmith.eyes",
+  "name": "观止于此",
   "versionName": "1.0.0",
   "versionCode": "1",
   "minPlatformVersion": "101",
@@ -10,9 +10,7 @@
     { "name": "system.router" },
     { "name": "system.shortcut" }
   ],
-  "permissions": [
-    { "origin": "*" }
-  ],
+  "permissions": [{ "origin": "*" }],
   "config": {
     "logLevel": "off"
   },
