@@ -1,0 +1,51 @@
+<template>
+  <div class="label">
+    <div class="avater">
+      <image src="{{user.profile_image_url}}" />
+    </div>
+    <div class="title">
+      <text class="user">{{user.screen_name}}</text>
+      <text class="desc">
+        <span>{{created}} </span>
+        <span>来自 {{source}}</span>
+      </text>
+    </div>
+    <div if="likes" class="like"><text class="iconfont icon-dianzan"></text> {{likes}} </div>
+  </div>
+</template>
+
+<script>
+export default {
+  props: ['user', 'created', 'source', 'likes'],
+};
+</script>
+
+<style scoped>
+.label {
+  display: flex;
+}
+.avater image {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+}
+.title {
+  margin-left: 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.title .user {
+  font-size: 15px;
+}
+.title .desc {
+  font-size: 12px;
+  color: #999999;
+}
+.like {
+  font-size: 12px;
+  color: #999999;
+  margin-right: 10px;
+}
+</style>

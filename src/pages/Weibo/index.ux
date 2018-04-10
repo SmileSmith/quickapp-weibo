@@ -1,0 +1,149 @@
+<!--
+
+<import name="loading-bar" src="../../components/loadingBar"></import> -->
+<import name="weibo-bar" src="../../components/weiboBar"></import>
+<import name="weibo-user" src="../../components/weiboUser"></import>
+<import name="rich-content" src="../../components/richContent"></import>
+
+<template>
+    <list class="weibo-list" onscrollbottom="onReachBottom" onscrolltop="onPullDownRefresh">
+      <block for="weibo in weiboList" >
+        <list-item if="{{!weibo.video}}" type="weibo" class="weibo-item"  @click="goDetial(weibo.id)">
+          <weibo-user user="{{weibo.user}}" created="{{weibo.created_at}}" source="{{weibo.source}}"></weibo-user>
+          <div class="content">
+            <rich-content content="{{weibo.text}}"></rich-content>
+          </div>
+          <div class="preview">
+            <block for="(index, url) in weibo.pics.smalls" >
+              <image  class="pic" src="{{url}}"
+              @click="previewImage(index)" />
+            </block>
+          </div>
+          <weibo-bar bar="{{weibo.bar}}"></weibo-bar>
+        </list-item>
+        <list-item if="{{weibo.video}}" type="weiboWithVideo" class="weibo-item"  @click="goDetial(weibo.id)">
+          <weibo-user user="{{weibo.user}}" created="{{weibo.created_at}}" source="{{weibo.source}}"></weibo-user>
+      <!--     <div class="content">
+            <richContent :content="weibo.text"></richContent>
+          </div> -->
+          <div class="preview">
+            <block for="(index, url) in weibo.pics.smalls" >
+              <image  class="pic" src="{{url}}"
+              @click="previewImage(index)" />
+            </block>
+            <video show="{{weibo.video}}" class="video" src="{{weibo.video ? weibo.video.url : ''}}"></video>
+          </div>
+          <weibo-bar bar="{{weibo.bar}}"></weibo-bar>
+        </list-item>
+      </block>
+    <!--     <div class="refresh"  @click="topRefresh">
+          <loadingButton :loading="topLoading"></loadingButton>
+        </div> -->
+    <list-item type="loadMore" class="load-more">
+      <progress type="circular"></progress>
+      <text>加载更多</text>
+    </list-item>
+  </list>
+</template>
+
+<script>
+import { getWeiboInfo } from '../../utils/weibo.js';
+import mv from '../../utils/mv.js';
+
+export default {
+  data: {
+    weiboList: [],
+    loading: false,
+  },
+  async onReachBottom() {
+    if (this.loading) return;
+    this.loading = true;
+    await this.refreshWeiboList();
+    this.loading = false;
+  },
+  async onPullDownRefresh() {
+    if (this.loading) return;
+    this.loading = true;
+    await this.refreshWeiboList({ top: true });
+    this.loading = false;
+  },
+  async refreshWeiboList(config = {}) {
+    console.info('### Weibo Page ### Get Data');
+    const { top } = config;
+    await mv.request({
+      url: 'https://m.weibo.cn/api/container/getIndex?containerid=102803_ctg1_8999_-_ctg1_8999_home',
+      method: 'GET',
+      data: { page: this.page },
+    }).then(({ data }) => {
+      data = JSON.parse(data);
+      this.page += 1;
+      const weiboList = this.filterData(data.data.cards);
+      this.weiboList = top ? weiboList : this.weiboList.concat(weiboList);
+    }).catch((err) => {
+      mv.showToast({ title: '请求数据失败', duration: 500, mask: true });
+      console.log(err);
+    });
+  },
+  goDetial(id) {
+/*     store.commit('setMWeiboId', id);
+    const url = `../../pages/mweiboDetial/main?id=${id}`;
+    wx.navigateTo({ url }); */
+  },
+  filterData(cardList) {
+    const list = [];
+    cardList.forEach((card) => {
+      if (card.card_type === 9 && this.weiboIdSet.indexOf(card.mblog.id) === -1) {
+        list.push(getWeiboInfo(card.mblog));
+        this.weiboIdSet.push(card.mblog.id);
+      }
+    });
+    return list;
+  },
+  onInit() {
+    this.weiboIdSet = [];
+    this.page = 1;
+    this.cached = false;
+  },
+  onReady() {
+    console.info('### Weibo Page ### Ready');
+    this.onPullDownRefresh();
+  },
+};
+</script>
+
+<style scoped>
+.weibo-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #eeeeee;
+}
+.weibo-item {
+  margin: 5px 0;
+  flex-direction: column;
+  background-color: #ffffff;
+}
+
+.card {
+  padding: 10px;
+  background-color: #fff;
+}
+.content {
+  margin: 5px 0;
+  font-size: 16px;
+  line-height: 25px;
+}
+.preview {
+  display: flex;
+  flex-wrap: wrap;
+}
+.pic {
+  margin: 2px;
+  width: 110px;
+  height: 110px;
+}
+.video {
+  height: 170px;
+  width: 300px;
+}
+</style>

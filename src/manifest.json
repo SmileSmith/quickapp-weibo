@@ -4,26 +4,26 @@
   "versionName": "1.0.0",
   "versionCode": "1",
   "minPlatformVersion": "101",
-  "icon": "/Common/logo.png",
+  "icon": "/assets/logo.png",
   "features": [
     { "name": "system.prompt" },
     { "name": "system.router" },
-    { "name": "system.shortcut" }
+    { "name": "system.shortcut" },
+    { "name": "system.storage" },
+    { "name": "system.fetch" }
   ],
   "permissions": [{ "origin": "*" }],
   "config": {
-    "logLevel": "off"
+    "logLevel": "info",
+    "designWidth": 375
   },
   "router": {
-    "entry": "Demo",
+    "entry": "pages/Home",
     "pages": {
-      "Demo": {
+      "pages/Home": {
         "component": "index"
       },
-      "DemoDetail": {
-        "component": "index"
-      },
-      "About": {
+      "pages/Weibo": {
         "component": "index"
       }
     }
@@ -33,15 +33,12 @@
     "titleBarTextColor": "#414141",
     "menu": true,
     "pages": {
-      "Demo": {
-        "titleBarText": "示例页",
+      "pages/Home": {
+        "titleBarText": "主页",
         "menu": false
       },
-      "DemoDetail": {
-        "titleBarText": "详情页"
-      },
-      "About": {
-        "menu": false
+      "pages/Weibo": {
+        "titleBarText": "热门微博"
       }
     }
   }

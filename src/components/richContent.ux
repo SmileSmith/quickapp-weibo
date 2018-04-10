@@ -1,0 +1,84 @@
+<template>
+  <text  class="rich-content">
+    <!-- <view v-for="(content, index) in contentList" :key="index">
+      <text if="content.type==='text'">{{content.text}}</text>
+      <image if="content.type==='emotion'" class="rich-emotion" :src="'https:' + content.src" :lazy-load="true" mode="widthFix"/>
+      <a if="content.type==='link'" class="rich-link">{{content.text}}</a>
+    </view> 因为个人小程序不支持外链web-view  目前注释 屏蔽A标签-->
+    <block class="rich-item" for="item in contentList">
+      <span class="rich-text">{{item.text}}</span><!-- <image show="{{item.type==='emotion'}}" class="rich-emotion" src="{{'https:' + item.src}}"/> -->
+    </block>
+  </text>
+</template>
+
+<script>
+export default {
+  props: ['content'],
+  data: {
+    contentList: [],
+  },
+  getContentList() {
+    const contentList = [];
+    let fullContent = this.content;
+    const links = this.content.match(/<(a).*?<\/\1>/g);
+    fullContent = fullContent.replace(/<(a).*?<\/\1>/g, '$l');
+    const emotions = this.content.match(/<(span).*?<\/\1>/g);
+    fullContent = fullContent.replace(/<(span).*?<\/\1>/g, '$e');
+
+    let tempText = '';
+    for (let i = 0, l = fullContent.length; i < l;) {
+      if (fullContent[i] !== '$') {
+        tempText += fullContent[i];
+        i += 1;
+      }
+      if (fullContent[i] === '$' && fullContent[i + 1] === 'e') {
+        const emotionText = emotions.shift();
+        contentList.push({ type: 'text', text: tempText });
+        tempText = '';
+        contentList.push({
+          type: 'emotion',
+          src: emotionText.match(/src=['"](.*?)['"]/)[1],
+        });
+        i += 2;
+      }
+      if (fullContent[i] === '$' && fullContent[i + 1] === 'l') {
+        contentList.push({ type: 'text', text: tempText });
+        tempText = '';
+        const linkText = links.shift();
+        contentList.push({
+          type: 'link',
+          text: linkText.match(/>([^>]*?)<\/a>/)[1],
+          // src: linkText.match(/href=['"](.*?)['"]/)[1],
+        });
+        i += 2;
+      }
+    }
+    if (tempText) {
+      contentList.push({ type: 'text', text: tempText });
+    }
+    return contentList;
+  },
+  onReady() {
+    this.contentList = this.getContentList();
+    console.info(JSON.stringify(this.contentList));
+  },
+};
+</script>
+
+<style scoped>
+.rich-item {
+  display: flex;
+  flex-wrap: wrap;
+}
+.rich-text{
+  font-size: 16px;
+}
+.rich-emotion {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+}
+.rich-link {
+  margin: 0 5px;
+}
+</style>

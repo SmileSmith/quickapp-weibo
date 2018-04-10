@@ -1,0 +1,40 @@
+<template>
+  <div class="bar">
+    <div class="item"><text class="iconfont icon-shuqian">转发</text> <text class="iconfont">{{bar.reposts}}</text> </div>
+    <div class="item"><text class="iconfont icon-pinglun">评论</text> <text class="iconfont">{{bar.comments}}</text> </div>
+    <div class="item"><text class="iconfont icon-dianzan">赞</text> <text class="iconfont">{{bar.attitudes}}</text> </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    props: ['bar'],
+  };
+</script>
+
+<style scoped>
+  .bar {
+    height: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 12px;
+    color: #999999;
+    background-color: #ffffff;
+  }
+
+  .item {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .item .iconfont {
+    font-size: 15px;
+    margin-right: 5px;
+  }
+</style>

@@ -1,0 +1,83 @@
+<template>
+  <div class="container">
+    <div class="usermotto">
+      <text if="weiboInfo">微博账号认证成功</text>
+    </div>
+    <a href="/pages/Weibo" class="weibo">即将打开世界的大门...</a>
+  </div>
+</template>
+
+<script>
+  import router from '@system.router'
+
+  export default {
+    private: {
+      userInfo: {},
+      weiboInfo: {},
+    },
+
+    methods: {
+      checkAccessToken() {
+        wx.login({
+          success: (res) => {
+            if (res.code) {
+              // 发起网络请求
+              wx.request({
+                url: api.checktoken,
+                data: {
+                  code: res.code,
+                },
+                success: ({
+                  data
+                }) => {
+                  if (data.access_token) {
+                    const url = `../../pages/weibo/main?access_token=${data.access_token}`;
+                    wx.redirectTo({
+                      url
+                    });
+                    return;
+                  }
+                  if (data.openid) {
+                    const url = `../../pages/login/main?openid=${data.openid}`;
+                    wx.redirectTo({
+                      url
+                    });
+                  }
+                },
+              });
+            } else {
+              console.log(`Weixin login error: ${res.errMsg}`);
+            }
+          },
+        });
+      },
+    },
+    onShow() {
+      setTimeout(() => {
+        const uri = '/pages/Weibo';
+        router.push({
+          uri
+        });
+      }, 500);
+    },
+  };
+</script>
+
+<style scoped>
+  .container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .usermotto {
+    flex-direction: column;
+    margin: 100px 0px;
+  }
+  .usermotto text {
+    font-size: 25px;
+  }
+  .weibo {
+    padding: 5px 10px;
+    color: #e6162d;
+    font-size: 25px;
+  }
+</style>
