@@ -20,8 +20,6 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 10px;
-    font-size: 12px;
-    color: #999999;
     background-color: #ffffff;
   }
 
@@ -34,7 +32,8 @@
   }
 
   .item .iconfont {
-    font-size: 15px;
+    font-size: 12px;
+    color: #999999;
     margin-right: 5px;
   }
 </style>

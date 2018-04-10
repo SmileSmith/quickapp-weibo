@@ -5,7 +5,7 @@
       <image if="content.type==='emotion'" class="rich-emotion" :src="'https:' + content.src" :lazy-load="true" mode="widthFix"/>
       <a if="content.type==='link'" class="rich-link">{{content.text}}</a>
     </view> 因为个人小程序不支持外链web-view  目前注释 屏蔽A标签-->
-    <block class="rich-item" for="item in contentList">
+    <block for="item in contentList">
       <span class="rich-text">{{item.text}}</span><!-- <image show="{{item.type==='emotion'}}" class="rich-emotion" src="{{'https:' + item.src}}"/> -->
     </block>
   </text>
@@ -60,21 +60,15 @@ export default {
   },
   onReady() {
     this.contentList = this.getContentList();
-    console.info(JSON.stringify(this.contentList));
   },
 };
 </script>
 
 <style scoped>
-.rich-item {
-  display: flex;
-  flex-wrap: wrap;
-}
 .rich-text{
   font-size: 16px;
 }
 .rich-emotion {
-  display: inline-block;
   width: 20px;
   height: 20px;
 }

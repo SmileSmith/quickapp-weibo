@@ -1,0 +1,46 @@
+<template>
+  <div class="preview">
+<!--     <block for="url in pics.smalls">
+      <image class="pic" src="{{url}}" @click="previewImage()"></image>
+    </block> -->
+    <image show="{{!!smalls[0]}}" class="pic" src="{{smalls[0]}}" @click="previewImage(0)"></image>
+    <image show="{{!!smalls[1]}}" class="pic" src="{{smalls[1]}}" @click="previewImage(1)"></image>
+    <image show="{{!!smalls[2]}}" class="pic" src="{{smalls[2]}}" @click="previewImage(2)"></image>
+    <image show="{{!!smalls[3]}}" class="pic" src="{{smalls[3]}}" @click="previewImage(3)"></image>
+    <image show="{{!!smalls[4]}}" class="pic" src="{{smalls[4]}}" @click="previewImage(4)"></image>
+    <image show="{{!!smalls[5]}}" class="pic" src="{{smalls[5]}}" @click="previewImage(5)"></image>
+    <image show="{{!!smalls[6]}}" class="pic" src="{{smalls[6]}}" @click="previewImage(6)"></image>
+    <image show="{{!!smalls[7]}}" class="pic" src="{{smalls[7]}}" @click="previewImage(7)"></image>
+    <image show="{{!!smalls[8]}}" class="pic" src="{{smalls[8]}}" @click="previewImage(8)"></image>
+  </div>
+</template>
+
+<script>
+  export default {
+    props: ['pics'],
+    private: {
+      smalls: [],
+    },
+    onInit() {
+      this.smalls = this.pics.smalls;
+    },
+    previewImage() {
+      this.$app.showToast({message: this.urls});
+    }
+  };
+
+</script>
+
+<style scoped>
+  .preview {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .pic {
+    margin: 2px;
+    width: 110px;
+    height: 110px;
+  }
+
+</style>
