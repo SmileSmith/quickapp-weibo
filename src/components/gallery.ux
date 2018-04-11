@@ -1,0 +1,49 @@
+<template>
+    <div class="preview">
+      <image show="{{showIndex === picIndex}}" class="pic" for="(picIndex, pic) in pics" src="{{pic}}" @swipe="changePic(picIndex)"></image>
+    </div>
+  </template>
+
+  <script>
+    export default {
+      props: ['pics', 'index'],
+      data: {
+        showIndex: 0,
+      },
+      changePic(index, evt) {
+        let changeIndex = index;
+        if (evt.direction === 'left') {
+          changeIndex += 1;
+        }
+        if (evt.direction === 'right') {
+          changeIndex -= 1;
+        }
+        if (evt.direction === 'up') {
+          this.$emit('click');
+        }
+        if (this.pics[changeIndex]) {
+          this.showIndex = changeIndex;
+        }
+      },
+      onInit() {
+        this.showIndex = this.index;
+      }
+    };
+
+  </script>
+
+  <style scoped>
+    .preview {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .pic {
+      width: 100%;
+      height: 100%;
+      resize-mode: contain;
+    }
+
+  </style>

@@ -3,6 +3,7 @@
 <import name="weibo-gallery" src="../../components/weiboGallery"></import>
 <import name="rich-content" src="../../components/richContent"></import>
 <import name="top-button" src="../../components/topButton"></import>
+<import name="gallery" src="../../components/gallery"></import>
 
 <template>
   <stack>
@@ -12,12 +13,12 @@
           <list-item if="{{!weibo.video}}" type="weibo" class="weibo-item"  @click="goDetial(weibo.id)">
             <weibo-user user="{{weibo.user}}" created="{{weibo.created_at}}" source="{{weibo.source}}"></weibo-user>
             <rich-content content="{{weibo.text}}"></rich-content>
-            <weibo-gallery pics="{{weibo.pics}}"></weibo-gallery>
+            <weibo-gallery pics="{{weibo.pics}}" @preview="openGallery"></weibo-gallery>
           </list-item>
           <list-item if="{{weibo.video}}" type="weiboWithVideo" class="weibo-item"  @click="goDetial(weibo.id)">
             <weibo-user user="{{weibo.user}}" created="{{weibo.created_at}}" source="{{weibo.source}}"></weibo-user>
             <rich-content content="{{weibo.text}}"></rich-content>
-            <weibo-gallery pics="{{weibo.pics}}"></weibo-gallery>
+            <weibo-gallery pics="{{weibo.pics}}" @preview="openGallery"></weibo-gallery>
             <video class="video" src="{{weibo.video.url}}" poster="{{weibo.video.pic}}"></video>
           </list-item>
           <list-item type="weiboBar">
@@ -30,7 +31,8 @@
       </list-item>
     </list>
   </refresh>
-  <top-button if="showTopButton" @click="goTop"></top-button>
+  <top-button if="{{showTopButton}}" @click="goTop"></top-button>
+  <gallery if="{{showGallery}}" pics="{{largePics}}" index="{{largePicIndex}}" @click="closeGallery"></gallery>
 </stack>
 </template>
 
@@ -42,6 +44,9 @@
       weiboList: [],
       topLoading: false,
       showTopButton: false,
+      showGallery: false,
+      largePics: [],
+      largePicIndex: 0,
     },
     async onReachBottom() {
       if (this.loading) return;
@@ -110,6 +115,15 @@
         duration: 300
       });
     },
+    openGallery(evt) {
+      this.largePics = evt.detail.larges;
+      this.largePicIndex = evt.detail.index;
+      this.showGallery = true;
+    },
+    closeGallery(evt) {
+      this.largePics = [];
+      this.showGallery = false
+    },
     onScroll(scroll) {
       if (scroll.scrollY <= -10) {
         this.showTopButton = true;
@@ -124,9 +138,8 @@
     },
     onInit() {
       this.resetPage();
-      this.refreshWeiboList({
-        top: true
-      });
+      this.refreshWeiboList({ top: true });
+      this.$on('showGallery', this.openGallery);
     },
     onReady() {
       console.info('### Weibo Page ### Ready');

@@ -24,8 +24,8 @@
     onInit() {
       this.smalls = this.pics.smalls;
     },
-    previewImage() {
-      this.$app.showToast({message: this.urls});
+    previewImage(index) {
+      this.$emit('preview', { index, larges: this.pics.larges });
     }
   };
 
