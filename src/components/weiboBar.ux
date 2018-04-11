@@ -1,8 +1,8 @@
 <template>
   <div class="bar">
-    <div class="item"><text class="iconfont icon-shuqian">转发</text> <text class="iconfont">{{bar.reposts}}</text> </div>
-    <div class="item"><text class="iconfont icon-pinglun">评论</text> <text class="iconfont">{{bar.comments}}</text> </div>
-    <div class="item"><text class="iconfont icon-dianzan">赞</text> <text class="iconfont">{{bar.attitudes}}</text> </div>
+    <div class="item"><text class="iconfont icon-shuqian">转发 {{bar.reposts}}</text></div>
+    <div class="item center-item "><text class="iconfont icon-pinglun">评论 {{bar.comments}}</text></div>
+    <div class="item"><text class="iconfont icon-dianzan">赞 {{bar.attitudes}}</text></div>
   </div>
 </template>
 
@@ -21,6 +21,9 @@
     align-items: center;
     padding: 0 10px;
     background-color: #ffffff;
+    border: 0px solid #eeeeee;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
   }
 
   .item {
@@ -29,6 +32,12 @@
     justify-content: center;
     align-items: center;
     text-align: center;
+  }
+
+  .center-item {
+    border: 0px solid #eeeeee;
+    border-left-width: 1px;
+    border-right-width: 1px;
   }
 
   .item .iconfont {

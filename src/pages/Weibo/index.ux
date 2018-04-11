@@ -11,21 +11,16 @@
       <block for="weibo in weiboList" tid="id">
         <list-item if="{{!weibo.video}}" type="weibo" class="weibo-item"  @click="goDetial(weibo.id)">
           <weibo-user user="{{weibo.user}}" created="{{weibo.created_at}}" source="{{weibo.source}}"></weibo-user>
-          <div class="content">
-            <rich-content content="{{weibo.text}}"></rich-content>
-          </div>
+          <rich-content content="{{weibo.text}}"></rich-content>
           <weibo-gallery pics="{{weibo.pics}}"></weibo-gallery>
-          <weibo-bar bar="{{weibo.bar}}"></weibo-bar>
         </list-item>
         <list-item if="{{weibo.video}}" type="weiboWithVideo" class="weibo-item"  @click="goDetial(weibo.id)">
           <weibo-user user="{{weibo.user}}" created="{{weibo.created_at}}" source="{{weibo.source}}"></weibo-user>
-          <div class="content">
-            <rich-content :content="weibo.text"></rich-content>
-          </div>
-          <div class="preview">
-            <weibo-gallery pics="{{weibo.pics}}"></weibo-gallery>
-            <video show="{{!!weibo.video}}" class="video" src="{{weibo.video ? weibo.video.url : ''}}"></video>
-          </div>
+          <rich-content content="{{weibo.text}}"></rich-content>
+          <weibo-gallery pics="{{weibo.pics}}"></weibo-gallery>
+          <video class="video" src="{{weibo.video.url}}"></video>
+        </list-item>
+        <list-item type="weiboBar">
           <weibo-bar bar="{{weibo.bar}}"></weibo-bar>
         </list-item>
       </block>
@@ -115,19 +110,12 @@ export default {
   background-color: #eeeeee;
 }
 .weibo-item {
-  margin: 5px 0;
+  margin-top: 10px;
+  padding: 10px;
   flex-direction: column;
   background-color: #ffffff;
-}
-
-.card {
-  padding: 10px;
-  background-color: #fff;
-}
-.content {
-  margin: 5px 0;
-  font-size: 16px;
-  line-height: 25px;
+  border: 0px solid #eeeeee;
+  border-top-width: 1px;
 }
 .video {
   height: 170px;
