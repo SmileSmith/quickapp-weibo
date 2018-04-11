@@ -1,0 +1,50 @@
+<template>
+  <!-- <div class="button" :class="{loading: loading}"></div> -->
+  <div class="button" @click="topClick">
+    <text class="button-text">▲</text>
+  </div>
+</template>
+<script>
+  export default {
+    name: 'topButton',
+    topClick() {
+      this.$emit('click');
+    }
+  };
+</script>
+
+<style scoped>
+  .button {
+    position: fixed;
+    bottom: 20px;
+    left: 162.5px;
+    width: 50px;
+    height: 50px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 25px;
+    border: 1px solid #cccccc;
+    background-color: #e6162d;
+    opacity: 0.8;
+    animation-name: showgototop;
+    animation-duration: 300ms;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in;
+  }
+  @keyframes showgototop {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0px);
+      opacity: 0.8;
+    }
+  }
+
+  .button-text {
+    padding-bottom: 5px;
+    font-size: 25px;
+    color: #ffffff;
+  }
+</style>

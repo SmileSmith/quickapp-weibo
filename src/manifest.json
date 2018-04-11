@@ -26,12 +26,15 @@
       },
       "pages/Weibo": {
         "component": "index"
+      },
+      "pages/About": {
+        "component": "index"
       }
     }
   },
   "display": {
-    "titleBarBackgroundColor": "#f2f2f2",
-    "titleBarTextColor": "#414141",
+    "titleBarBackgroundColor": "#e6162d",
+    "titleBarTextColor": "#eeeeee",
     "menu": true,
     "pages": {
       "pages/Home": {
@@ -41,6 +44,9 @@
       "pages/Weibo": {
         "titleBarText": "热门微博",
         "menu": true
+      },
+      "pages/About": {
+        "titleBarText": "关于"
       }
     }
   }

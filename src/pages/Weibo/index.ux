@@ -1,124 +1,177 @@
-<!--
-
-<import name="loading-bar" src="../../components/loadingBar"></import> -->
 <import name="weibo-bar" src="../../components/weiboBar"></import>
 <import name="weibo-user" src="../../components/weiboUser"></import>
 <import name="weibo-gallery" src="../../components/weiboGallery"></import>
 <import name="rich-content" src="../../components/richContent"></import>
+<import name="top-button" src="../../components/topButton"></import>
 
 <template>
-    <list class="weibo-list" onscrollbottom="onReachBottom">
-      <block for="weibo in weiboList" tid="id">
-        <list-item if="{{!weibo.video}}" type="weibo" class="weibo-item"  @click="goDetial(weibo.id)">
-          <weibo-user user="{{weibo.user}}" created="{{weibo.created_at}}" source="{{weibo.source}}"></weibo-user>
-          <rich-content content="{{weibo.text}}"></rich-content>
-          <weibo-gallery pics="{{weibo.pics}}"></weibo-gallery>
-        </list-item>
-        <list-item if="{{weibo.video}}" type="weiboWithVideo" class="weibo-item"  @click="goDetial(weibo.id)">
-          <weibo-user user="{{weibo.user}}" created="{{weibo.created_at}}" source="{{weibo.source}}"></weibo-user>
-          <rich-content content="{{weibo.text}}"></rich-content>
-          <weibo-gallery pics="{{weibo.pics}}"></weibo-gallery>
-          <video class="video" src="{{weibo.video.url}}"></video>
-        </list-item>
-        <list-item type="weiboBar">
-          <weibo-bar bar="{{weibo.bar}}"></weibo-bar>
-        </list-item>
-      </block>
-    <!--     <div class="refresh"  @click="topRefresh">
-          <loadingButton :loading="topLoading"></loadingButton>
-        </div> -->
-    <list-item type="loadMore" class="load-more">
-      <progress type="circular"></progress>
-      <text>加载更多</text>
-    </list-item>
-  </list>
+  <stack>
+    <refresh class="refresh" onrefresh="onPullDownRefresh" refreshing="{{topLoading}}" offset="200">
+      <list class="weibo-list" id="weibo-list" onscrollbottom="onReachBottom" onscroll="onScroll">
+        <block for="weibo in weiboList" tid="id">
+          <list-item if="{{!weibo.video}}" type="weibo" class="weibo-item"  @click="goDetial(weibo.id)">
+            <weibo-user user="{{weibo.user}}" created="{{weibo.created_at}}" source="{{weibo.source}}"></weibo-user>
+            <rich-content content="{{weibo.text}}"></rich-content>
+            <weibo-gallery pics="{{weibo.pics}}"></weibo-gallery>
+          </list-item>
+          <list-item if="{{weibo.video}}" type="weiboWithVideo" class="weibo-item"  @click="goDetial(weibo.id)">
+            <weibo-user user="{{weibo.user}}" created="{{weibo.created_at}}" source="{{weibo.source}}"></weibo-user>
+            <rich-content content="{{weibo.text}}"></rich-content>
+            <weibo-gallery pics="{{weibo.pics}}"></weibo-gallery>
+            <video class="video" src="{{weibo.video.url}}" poster="{{weibo.video.pic}}"></video>
+          </list-item>
+          <list-item type="weiboBar">
+            <weibo-bar bar="{{weibo.bar}}"></weibo-bar>
+          </list-item>
+        </block>
+      <list-item type="loadMore" class="load-more">
+        <progress class="load-progress" type="circular"></progress>
+        <text class="load-text">加载更多</text>
+      </list-item>
+    </list>
+  </refresh>
+  <top-button if="showTopButton" @click="goTop"></top-button>
+</stack>
 </template>
 
 <script>
-import { getWeiboInfo } from '../../utils/weibo.js';
+  import { getWeiboInfo } from '../../utils/weibo.js';
 
-export default {
-  private: {
-    weiboList: [],
-    loading: false,
-  },
-  async onReachBottom() {
-    if (this.loading) return;
-    this.loading = true;
-    await this.refreshWeiboList();
-    this.loading = false;
-  },
-  async onPullDownRefresh() {
-    if (this.loading) return;
-    this.loading = true;
-    await this.refreshWeiboList({ top: true });
-    this.loading = false;
-  },
-  async refreshWeiboList(config = {}) {
-    console.info('### Weibo Page ### Get Data');
-    const { top } = config;
-    await this.$app.request({
-      url: 'https://m.weibo.cn/api/container/getIndex?containerid=102803_ctg1_8999_-_ctg1_8999_home',
-      method: 'GET',
-      data: { page: this.page },
-    }).then(({ data }) => {
-      data = JSON.parse(data);
-      this.page += 1;
-      const weiboList = this.filterData(data.data.cards);
-      if (top) {
-        this.weiboList = weiboList;
-      } else {
-        this.weiboList = this.weiboList.concat(weiboList);
+  export default {
+    private: {
+      weiboList: [],
+      topLoading: false,
+      showTopButton: false,
+    },
+    async onReachBottom() {
+      if (this.loading) return;
+      this.loading = true;
+      await this.refreshWeiboList();
+      this.loading = false;
+    },
+    async onPullDownRefresh() {
+      if (this.topLoading) return;
+      this.resetPage();
+      this.topLoading = true;
+      await this.refreshWeiboList({
+        top: true
+      });
+      this.topLoading = false;
+    },
+    async refreshWeiboList(config = {}) {
+      console.info('### Weibo Page ### Get Data');
+      const { top } = config;
+      await this.$app.request({
+        url: 'https://m.weibo.cn/api/container/getIndex?containerid=102803_ctg1_8999_-_ctg1_8999_home',
+        method: 'GET',
+        data: {
+          page: this.page
+        },
+      }).then(({ data }) => {
+        try {
+          data = JSON.parse(data);
+          const weiboList = this.filterData(data.data.cards);
+          this.weiboList = top ? weiboList : this.weiboList.concat(weiboList);
+          this.page += 1;
+        } catch (err) {
+          this.$app.showToast({
+            message: '请求数据失败',
+            duration: 500
+          });
+        }
+      }).catch((err) => {
+        this.$app.showToast({
+          message: '请求数据失败',
+          duration: 500
+        });
+        console.error(err);
+      });
+    },
+    filterData(cardList) {
+      const list = [];
+      cardList.forEach((card) => {
+        if (card.card_type === 9 && this.weiboIdSet.indexOf(card.mblog.id) === -1) {
+          list.push(getWeiboInfo(card.mblog));
+          this.weiboIdSet.push(card.mblog.id);
+        }
+      });
+      return list;
+    },
+    goDetial(id) {
+      /*     store.commit('setMWeiboId', id);
+          const url = `../../pages/mweiboDetial/main?id=${id}`;
+          wx.navigateTo({ url }); */
+    },
+    goTop() {
+      this.showTopButton = false;
+      this.$element('weibo-list').scrollTo({
+        index: 0,
+        smooth: true,
+        duration: 300
+      });
+    },
+    onScroll(scroll) {
+      if (scroll.scrollY <= -10) {
+        this.showTopButton = true;
+      } else if (scroll.scrollY >= 10) {
+        this.showTopButton = false;
       }
-    }).catch((err) => {
-      this.$app.showToast({ title: '请求数据失败', duration: 500, mask: true });
-      console.log(err);
-    });
-  },
-  goDetial(id) {
-/*     store.commit('setMWeiboId', id);
-    const url = `../../pages/mweiboDetial/main?id=${id}`;
-    wx.navigateTo({ url }); */
-  },
-  filterData(cardList) {
-    const list = [];
-    cardList.forEach((card) => {
-      if (card.card_type === 9 && this.weiboIdSet.indexOf(card.mblog.id) === -1) {
-        list.push(getWeiboInfo(card.mblog));
-        this.weiboIdSet.push(card.mblog.id);
-      }
-    });
-    return list;
-  },
-  onInit() {
-    this.weiboIdSet = [];
-    this.page = 1;
-    this.cached = false;
-    this.onPullDownRefresh();
-  },
-  onReady() {
-    console.info('### Weibo Page ### Ready');
-  },
-};
+    },
+    resetPage() {
+      this.page = 1;
+      this.weiboIdSet = [];
+      this.showTopButton = false;
+    },
+    onInit() {
+      this.resetPage();
+      this.refreshWeiboList({
+        top: true
+      });
+    },
+    onReady() {
+      console.info('### Weibo Page ### Ready');
+    },
+  };
 </script>
 
 <style scoped>
-.weibo-list {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background-color: #eeeeee;
-}
-.weibo-item {
-  margin-top: 10px;
-  padding: 10px;
-  flex-direction: column;
-  background-color: #ffffff;
-  border: 0px solid #eeeeee;
-  border-top-width: 1px;
-}
-.video {
-  height: 170px;
-  width: 300px;
-}
+  .weibo-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #eeeeee;
+  }
+
+  .weibo-item {
+    margin-top: 10px;
+    padding: 10px;
+    flex-direction: column;
+    background-color: #ffffff;
+    border: 0px solid #eeeeee;
+    border-top-width: 1px;
+  }
+
+  .video {
+    height: 170px;
+    width: 300px;
+  }
+
+  .refresh {
+    progress-color: #ff6600;
+  }
+
+  .load-more {
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .load-progress {
+    color: #ff6600;
+  }
+
+  .load-text {
+    font-size: 15px;
+    margin: 0 20px;
+  }
 </style>
