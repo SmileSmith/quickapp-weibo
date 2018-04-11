@@ -5,8 +5,9 @@
       <image if="content.type==='emotion'" class="rich-emotion" :src="'https:' + content.src" :lazy-load="true" mode="widthFix"/>
       <a if="content.type==='link'" class="rich-link">{{content.text}}</a>
     </view> 因为个人小程序不支持外链web-view  目前注释 屏蔽A标签-->
-    <block for="item in contentList">
-      <span class="rich-text">{{item.text}}</span><!-- <image show="{{item.type==='emotion'}}" class="rich-emotion" src="{{'https:' + item.src}}"/> -->
+    <block for="content in contentList">
+      <span if="{{content.type === 'text'}}" class="rich-text">{{content.text}}</span>
+      <a if="{{content.type === 'link'}}" href="{{content.src}}" class="rich-link">{{content.text}}</a><!-- <image show="{{item.type==='emotion'}}" class="rich-emotion" src="{{'https:' + item.src}}"/> -->
     </block>
   </text>
 </template>
@@ -45,10 +46,11 @@ export default {
         contentList.push({ type: 'text', text: tempText });
         tempText = '';
         const linkText = links.shift();
+        const src = linkText.match(/href=['"](.*?)['"]/)[1];
         contentList.push({
           type: 'link',
           text: linkText.match(/>([^>]*?)<\/a>/)[1],
-          // src: linkText.match(/href=['"](.*?)['"]/)[1],
+          src: src.startsWith('/') ? `https://m.weibo.cn${src}` : src,
         });
         i += 2;
       }
@@ -58,21 +60,27 @@ export default {
     }
     return contentList;
   },
-  onReady() {
+  onInit() {
     this.contentList = this.getContentList();
   },
 };
 </script>
 
 <style scoped>
-.rich-text{
+.rich-content {
+  margin: 5px 0;
   font-size: 16px;
+  line-height: 30px;
+}
+.rich-text{
+  color: #333333;
 }
 .rich-emotion {
   width: 20px;
   height: 20px;
 }
 .rich-link {
+  color: #ff7300;
   margin: 0 5px;
 }
 </style>

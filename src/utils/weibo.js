@@ -19,12 +19,12 @@ export function getCookieFilter(cookie) {
  */
 function getTextFilter(text) {
   return text
-  .replace(/https?:\/\/[\w\d./]+/g, '[网页链接]')
-  .replace(/<br\/>/g, '\n')
-  .replace(/&quot;/g, '"')
-  .replace(/&gt;/g, '>')
-  .replace(/&lt;/g, '<')
-  .replace(/&amp;/g, '&');
+  // .replace(/https?:\/\/[\w\d./]+/g, '[网页链接]')
+    .replace(/<br\/>/g, '\n')
+    .replace(/&quot;/g, '"')
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<')
+    .replace(/&amp;/g, '&');
 }
 
 /**

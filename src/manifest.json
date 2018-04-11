@@ -10,7 +10,8 @@
     { "name": "system.router" },
     { "name": "system.shortcut" },
     { "name": "system.storage" },
-    { "name": "system.fetch" }
+    { "name": "system.fetch" },
+    { "name": "system.webview" }
   ],
   "permissions": [{ "origin": "*" }],
   "config": {
@@ -38,7 +39,8 @@
         "menu": false
       },
       "pages/Weibo": {
-        "titleBarText": "热门微博"
+        "titleBarText": "热门微博",
+        "menu": true
       }
     }
   }
