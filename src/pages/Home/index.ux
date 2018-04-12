@@ -18,38 +18,7 @@
 
     methods: {
       checkAccessToken() {
-        wx.login({
-          success: (res) => {
-            if (res.code) {
-              // 发起网络请求
-              wx.request({
-                url: api.checktoken,
-                data: {
-                  code: res.code,
-                },
-                success: ({
-                  data
-                }) => {
-                  if (data.access_token) {
-                    const url = `../../pages/weibo/main?access_token=${data.access_token}`;
-                    wx.redirectTo({
-                      url
-                    });
-                    return;
-                  }
-                  if (data.openid) {
-                    const url = `../../pages/login/main?openid=${data.openid}`;
-                    wx.redirectTo({
-                      url
-                    });
-                  }
-                },
-              });
-            } else {
-              console.log(`Weixin login error: ${res.errMsg}`);
-            }
-          },
-        });
+        // TODO
       },
     },
     onShow() {

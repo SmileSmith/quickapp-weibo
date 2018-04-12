@@ -1,8 +1,5 @@
 <template>
   <div class="preview">
-<!--     <block for="url in pics.smalls">
-      <image class="pic" src="{{url}}" @click="previewImage()"></image>
-    </block> -->
     <image show="{{!!smalls[0]}}" class="pic" src="{{smalls[0]}}" @click="previewImage(0)"></image>
     <image show="{{!!smalls[1]}}" class="pic" src="{{smalls[1]}}" @click="previewImage(1)"></image>
     <image show="{{!!smalls[2]}}" class="pic" src="{{smalls[2]}}" @click="previewImage(2)"></image>
@@ -25,7 +22,6 @@
       this.smalls = this.pics.smalls;
     },
     previewImage(index) {
-      /* this.$emit('preview', { index, larges: this.pics.larges }); */
       this.$app.navigateTo({
         uri: '/pages/Gallery',
         params: {

@@ -2,19 +2,80 @@ import fetch from '@system.fetch';
 import storage from '@system.storage';
 import prompt from '@system.prompt';
 import router from '@system.router';
+import shortcut from '@system.shortcut';
+
+/**
+ * 显示菜单
+ */
+function showMenu() {
+  var appInfo = require('@system.app').getInfo();
+  prompt.showContextMenu({
+    itemList: ['保存桌面', '关于', '取消'],
+    success: function(ret) {
+      switch (ret.index) {
+        case 0:
+          // 保存桌面
+          createShortcut();
+          break;
+        case 1:
+          // 关于
+          router.push({
+            uri: '/pages/About',
+            params: { name: appInfo.name, icon: appInfo.icon },
+          });
+          break;
+        case 2:
+          // 取消
+          break;
+        default:
+          prompt.showToast({ message: 'error' });
+      }
+    },
+  });
+}
+
+/**
+ * 创建桌面图标
+ * 注意：使用加载器测试`创建桌面快捷方式`功能时，请先在`系统设置`中打开`应用加载器`的`桌面快捷方式`权限
+ */
+function createShortcut() {
+  shortcut.hasInstalled({
+    success: function(ret) {
+      if (ret) {
+        prompt.showToast({ message: '已创建桌面图标' });
+      } else {
+        shortcut.install({
+          success: function() {
+            prompt.showToast({ message: '成功创建桌面图标' });
+          },
+          fail: function(errmsg, errcode) {
+            prompt.showToast({ message: 'error: ' + errcode + '---' + errmsg });
+          },
+        });
+      }
+    },
+  });
+}
+
+
+const wx = wx;
 
 // 全局mv对象
 const mv = {};
 
-mv.request = fetch.fetch;
-mv.setStorage = storage.set;
-mv.getStorage = storage.get;
-mv.removeStorage = storage.delete;
-mv.showToast = prompt.showToast;
-mv.showModal = prompt.showDialog;
-mv.navigateTo = router.push;
-mv.navigateBack = router.back;
-mv.redirectTo = router.replace;
+if (!wx) {
+  mv.request = fetch.fetch;
+  mv.setStorage = storage.set;
+  mv.getStorage = storage.get;
+  mv.removeStorage = storage.delete;
+  mv.showToast = prompt.showToast;
+  mv.showModal = prompt.showDialog;
+  mv.navigateTo = router.push;
+  mv.navigateBack = router.back;
+  mv.redirectTo = router.replace;
+  mv.showMenu = showMenu;
+  mv.createShortcut = createShortcut;
+}
 
 /**
  * Promise转换函数
@@ -34,160 +95,165 @@ function toPromise(func, obj) {
 }
 
 export default {
+  // 快应用菜单栏
+  showMenu: mv.showMenu,
+  // 快应用创建快捷方式
+  createShortcut: mv.createShortcut,
+
   // 网络请求
   request: (obj) => toPromise(mv.request, obj),
   // 界面交互
   showToast: obj => toPromise(mv.showToast, obj),
-  // showLoading: obj => f(mv.showLoading, obj),
+  // showLoading: obj => toPromise(mv.showLoading, obj),
   showModal: obj => toPromise(mv.showModal, obj),
-  // showActionSheet: obj => f(mv.showActionSheet, obj),
+  // showActionSheet: obj => toPromise(mv.showActionSheet, obj),
   // // 导航条
-  // setNavigationBarTitle: obj => f(mv.setNavigationBarTitle, obj),
-  // setNavigationBarColor: obj => f(mv.setNavigationBarColor, obj),
-  // setTopBarText: obj => f(mv.setTopBarText, obj),
+  // setNavigationBarTitle: obj => toPromise(mv.setNavigationBarTitle, obj),
+  // setNavigationBarColor: obj => toPromise(mv.setNavigationBarColor, obj),
+  // setTopBarText: obj => toPromise(mv.setTopBarText, obj),
   // // 导航
   navigateTo: obj => toPromise(mv.navigateTo, obj),
   redirectTo: obj => toPromise(mv.redirectTo, obj),
-  // switchTab: obj => f(mv.switchTab, obj),
-  // reLaunch: obj => f(mv.reLaunch, obj),
+  // switchTab: obj => toPromise(mv.switchTab, obj),
+  // reLaunch: obj => toPromise(mv.reLaunch, obj),
   navigateBack: obj => toPromise(mv.navigateBack, obj),
 
   // // 用户相关
-  // login: obj => f(mv.login, obj),
-  // checkSession: obj => f(mv.checkSession, obj),
-  // authorize: obj => f(mv.authorize, obj),
-  // getUserInfo: obj => f(mv.getUserInfo, obj),
+  // login: obj => toPromise(mv.login, obj),
+  // checkSession: obj => toPromise(mv.checkSession, obj),
+  // authorize: obj => toPromise(mv.authorize, obj),
+  // getUserInfo: obj => toPromise(mv.getUserInfo, obj),
 
   // // 支付
-  // requestPayment: obj => f(mv.requestPayment, obj),
+  // requestPayment: obj => toPromise(mv.requestPayment, obj),
 
   // // 图片
-  // chooseImage: obj => f(mv.chooseImage, obj),
-  // previewImage: obj => f(mv.previewImage, obj),
-  // getImageInfo: obj => f(mv.getImageInfo, obj),
-  // saveImageToPhotosAlbum: obj => f(mv.saveImageToPhotosAlbum, obj),
+  // chooseImage: obj => toPromise(mv.chooseImage, obj),
+  // previewImage: obj => toPromise(mv.previewImage, obj),
+  // getImageInfo: obj => toPromise(mv.getImageInfo, obj),
+  // saveImageToPhotosAlbum: obj => toPromise(mv.saveImageToPhotosAlbum, obj),
 
   // // 文件
-  // uploadFile: obj => f(mv.uploadFile, obj),
-  // downloadFile: obj => f(mv.downloadFile, obj),
+  // uploadFile: obj => toPromise(mv.uploadFile, obj),
+  // downloadFile: obj => toPromise(mv.downloadFile, obj),
 
   // // 录音
-  // startRecord: obj => f(mv.startRecord, obj),
+  // startRecord: obj => toPromise(mv.startRecord, obj),
 
   // // 音频播放
-  // playVoice: obj => f(mv.playVoice, obj),
+  // playVoice: obj => toPromise(mv.playVoice, obj),
 
   // // 音乐播放
-  // getBackgroundAudioPlayerState: obj => f(mv.getBackgroundAudioPlayerState, obj),
-  // playBackgroundAudio: obj => f(mv.playBackgroundAudio, obj),
-  // seekBackgroundAudio: obj => f(mv.seekBackgroundAudio, obj),
+  // getBackgroundAudioPlayerState: obj => toPromise(mv.getBackgroundAudioPlayerState, obj),
+  // playBackgroundAudio: obj => toPromise(mv.playBackgroundAudio, obj),
+  // seekBackgroundAudio: obj => toPromise(mv.seekBackgroundAudio, obj),
 
   // // 视频
-  // chooseVideo: obj => f(mv.chooseVideo, obj),
-  // saveVideoToPhotosAlbum: obj => f(mv.saveVideoToPhotosAlbum, obj),
+  // chooseVideo: obj => toPromise(mv.chooseVideo, obj),
+  // saveVideoToPhotosAlbum: obj => toPromise(mv.saveVideoToPhotosAlbum, obj),
 
   // // 文件
-  // saveFile: obj => f(mv.saveFile, obj),
-  // getFileInfo: obj => f(mv.getFileInfo, obj),
-  // getSavedFileList: obj => f(mv.getSavedFileList, obj),
-  // getSavedFileInfo: obj => f(mv.getSavedFileInfo, obj),
-  // removeSavedFile: obj => f(mv.removeSavedFile, obj),
-  // openDocument: obj => f(mv.openDocument, obj),
+  // saveFile: obj => toPromise(mv.saveFile, obj),
+  // getFileInfo: obj => toPromise(mv.getFileInfo, obj),
+  // getSavedFileList: obj => toPromise(mv.getSavedFileList, obj),
+  // getSavedFileInfo: obj => toPromise(mv.getSavedFileInfo, obj),
+  // removeSavedFile: obj => toPromise(mv.removeSavedFile, obj),
+  // openDocument: obj => toPromise(mv.openDocument, obj),
 
   // // 数据缓存
   setStorage: (obj) => toPromise(mv.setStorage, obj),
   getStorage: (obj) => toPromise(mv.getStorage, obj),
-  // getStorageInfo: obj => f(mv.getStorageInfo, obj),
+  // getStorageInfo: obj => toPromise(mv.getStorageInfo, obj),
   removeStorage: (obj) => toPromise(mv.removeStorage, obj),
 
   // // 位置
-  // getLocation: obj => f(mv.getLocation, obj),
-  // chooseLocation: obj => f(mv.chooseLocation, obj),
-  // openLocation: obj => f(mv.openLocation, obj),
+  // getLocation: obj => toPromise(mv.getLocation, obj),
+  // chooseLocation: obj => toPromise(mv.chooseLocation, obj),
+  // openLocation: obj => toPromise(mv.openLocation, obj),
 
   // // 设备
-  // getSystemInfo: obj => f(mv.getSystemInfo, obj),
-  // getNetworkType: obj => f(mv.getNetworkType, obj),
-  // startAccelerometer: obj => f(mv.startAccelerometer, obj),
-  // stopAccelerometer: obj => f(mv.stopAccelerometer, obj),
-  // startCompass: obj => f(mv.startCompass, obj),
-  // stopCompass: obj => f(mv.stopCompass, obj),
+  // getSystemInfo: obj => toPromise(mv.getSystemInfo, obj),
+  // getNetworkType: obj => toPromise(mv.getNetworkType, obj),
+  // startAccelerometer: obj => toPromise(mv.startAccelerometer, obj),
+  // stopAccelerometer: obj => toPromise(mv.stopAccelerometer, obj),
+  // startCompass: obj => toPromise(mv.startCompass, obj),
+  // stopCompass: obj => toPromise(mv.stopCompass, obj),
   // // 打电话
-  // makePhoneCall: obj => f(mv.makePhoneCall, obj),
+  // makePhoneCall: obj => toPromise(mv.makePhoneCall, obj),
   // // 扫码
-  // scanCode: obj => f(mv.scanCode, obj),
+  // scanCode: obj => toPromise(mv.scanCode, obj),
   // // 剪切板
-  // setClipboardData: obj => f(mv.setClipboardData, obj),
-  // getClipboardData: obj => f(mv.getClipboardData, obj),
+  // setClipboardData: obj => toPromise(mv.setClipboardData, obj),
+  // getClipboardData: obj => toPromise(mv.getClipboardData, obj),
   // // 蓝牙
-  // openBluetoothAdapter: obj => f(mv.openBluetoothAdapter, obj),
-  // closeBluetoothAdapter: obj => f(mv.closeBluetoothAdapter, obj),
-  // getBluetoothAdapterState: obj => f(mv.getBluetoothAdapterState, obj),
-  // startBluetoothDevicesDiscovery: obj => f(mv.startBluetoothDevicesDiscovery, obj),
-  // stopBluetoothDevicesDiscovery: obj => f(mv.stopBluetoothDevicesDiscovery, obj),
-  // getBluetoothDevices: obj => f(mv.getBluetoothDevices, obj),
-  // getConnectedBluetoothDevices: obj => f(mv.getConnectedBluetoothDevices, obj),
-  // createBLEConnection: obj => f(mv.createBLEConnection, obj),
-  // closeBLEConnection: obj => f(mv.closeBLEConnection, obj),
-  // getBLEDeviceServices: obj => f(mv.getBLEDeviceServices, obj),
+  // openBluetoothAdapter: obj => toPromise(mv.openBluetoothAdapter, obj),
+  // closeBluetoothAdapter: obj => toPromise(mv.closeBluetoothAdapter, obj),
+  // getBluetoothAdapterState: obj => toPromise(mv.getBluetoothAdapterState, obj),
+  // startBluetoothDevicesDiscovery: obj => toPromise(mv.startBluetoothDevicesDiscovery, obj),
+  // stopBluetoothDevicesDiscovery: obj => toPromise(mv.stopBluetoothDevicesDiscovery, obj),
+  // getBluetoothDevices: obj => toPromise(mv.getBluetoothDevices, obj),
+  // getConnectedBluetoothDevices: obj => toPromise(mv.getConnectedBluetoothDevices, obj),
+  // createBLEConnection: obj => toPromise(mv.createBLEConnection, obj),
+  // closeBLEConnection: obj => toPromise(mv.closeBLEConnection, obj),
+  // getBLEDeviceServices: obj => toPromise(mv.getBLEDeviceServices, obj),
   // // iBeacon
-  // startBeaconDiscovery: obj => f(mv.startBeaconDiscovery, obj),
-  // stopBeaconDiscovery: obj => f(mv.stopBeaconDiscovery, obj),
-  // getBeacons: obj => f(mv.getBeacons, obj),
+  // startBeaconDiscovery: obj => toPromise(mv.startBeaconDiscovery, obj),
+  // stopBeaconDiscovery: obj => toPromise(mv.stopBeaconDiscovery, obj),
+  // getBeacons: obj => toPromise(mv.getBeacons, obj),
   // // 屏幕亮度
-  // setScreenBrightness: obj => f(mv.setScreenBrightness, obj),
-  // getScreenBrightness: obj => f(mv.getScreenBrightness, obj),
-  // setKeepScreenOn: obj => f(mv.setKeepScreenOn, obj),
+  // setScreenBrightness: obj => toPromise(mv.setScreenBrightness, obj),
+  // getScreenBrightness: obj => toPromise(mv.getScreenBrightness, obj),
+  // setKeepScreenOn: obj => toPromise(mv.setKeepScreenOn, obj),
   // // 振动
-  // vibrateLong: obj => f(mv.vibrateLong, obj),
-  // vibrateShort: obj => f(mv.vibrateShort, obj),
+  // vibrateLong: obj => toPromise(mv.vibrateLong, obj),
+  // vibrateShort: obj => toPromise(mv.vibrateShort, obj),
   // // 联系人
-  // addPhoneContact: obj => f(mv.addPhoneContact, obj),
+  // addPhoneContact: obj => toPromise(mv.addPhoneContact, obj),
   // // NFC
-  // getHCEState: obj => f(mv.getHCEState, obj),
-  // startHCE: obj => f(mv.startHCE, obj),
-  // stopHCE: obj => f(mv.stopHCE, obj),
-  // sendHCEMessage: obj => f(mv.sendHCEMessage, obj),
+  // getHCEState: obj => toPromise(mv.getHCEState, obj),
+  // startHCE: obj => toPromise(mv.startHCE, obj),
+  // stopHCE: obj => toPromise(mv.stopHCE, obj),
+  // sendHCEMessage: obj => toPromise(mv.sendHCEMessage, obj),
   // // Wi-Fi
-  // startWifi: obj => f(mv.startWifi, obj),
-  // stopWifi: obj => f(mv.stopWifi, obj),
-  // connectWifi: obj => f(mv.connectWifi, obj),
-  // getWifiList: obj => f(mv.getWifiList, obj),
-  // setWifiList: obj => f(mv.setWifiList, obj),
-  // getConnectedWifi: obj => f(mv.getConnectedWifi, obj),
+  // startWifi: obj => toPromise(mv.startWifi, obj),
+  // stopWifi: obj => toPromise(mv.stopWifi, obj),
+  // connectWifi: obj => toPromise(mv.connectWifi, obj),
+  // getWifiList: obj => toPromise(mv.getWifiList, obj),
+  // setWifiList: obj => toPromise(mv.setWifiList, obj),
+  // getConnectedWifi: obj => toPromise(mv.getConnectedWifi, obj),
 
   // // 第三方平台
-  // getExtConfig: obj => f(mv.getExtConfig, obj),
+  // getExtConfig: obj => toPromise(mv.getExtConfig, obj),
 
   // // 转发
-  // showShareMenu: obj => f(mv.showShareMenu, obj),
-  // hideShareMenu: obj => f(mv.hideShareMenu, obj),
-  // updateShareMenu: obj => f(mv.updateShareMenu, obj),
-  // getShareInfo: obj => f(mv.getShareInfo, obj),
+  // showShareMenu: obj => toPromise(mv.showShareMenu, obj),
+  // hideShareMenu: obj => toPromise(mv.hideShareMenu, obj),
+  // updateShareMenu: obj => toPromise(mv.updateShareMenu, obj),
+  // getShareInfo: obj => toPromise(mv.getShareInfo, obj),
 
   // // 收货地址
-  // chooseAddress: obj => f(mv.chooseAddress, obj),
+  // chooseAddress: obj => toPromise(mv.chooseAddress, obj),
 
   // // 卡券
-  // addCard: obj => f(mv.addCard, obj),
-  // openCard: obj => f(mv.openCard, obj),
+  // addCard: obj => toPromise(mv.addCard, obj),
+  // openCard: obj => toPromise(mv.openCard, obj),
 
   // // 设置
-  // openSetting: obj => f(mv.openSetting, obj),
-  // getSetting: obj => f(mv.getSetting, obj),
+  // openSetting: obj => toPromise(mv.openSetting, obj),
+  // getSetting: obj => toPromise(mv.getSetting, obj),
 
   // // 微信运动
-  // getWeRunData: obj => f(mv.getWeRunData, obj),
+  // getWeRunData: obj => toPromise(mv.getWeRunData, obj),
 
   // // 打开小程序
-  // navigateToMiniProgram: obj => f(mv.navigateToMiniProgram, obj),
-  // navigateBackMiniProgram: obj => f(mv.navigateBackMiniProgram, obj),
+  // navigateToMiniProgram: obj => toPromise(mv.navigateToMiniProgram, obj),
+  // navigateBackMiniProgram: obj => toPromise(mv.navigateBackMiniProgram, obj),
 
   // // 获取发票抬头
-  // chooseInvoiceTitle: obj => f(mv.chooseInvoiceTitle, obj),
+  // chooseInvoiceTitle: obj => toPromise(mv.chooseInvoiceTitle, obj),
 
   // // 生物认证
-  // checkIsSupportSoterAuthentication: obj => f(mv.checkIsSupportSoterAuthentication, obj),
-  // startSoterAuthentication: obj => f(mv.startSoterAuthentication, obj),
-  // checkIsSoterEnrolledInDevice: obj => f(mv.checkIsSoterEnrolledInDevice, obj),
+  // checkIsSupportSoterAuthentication: obj => toPromise(mv.checkIsSupportSoterAuthentication, obj),
+  // startSoterAuthentication: obj => toPromise(mv.startSoterAuthentication, obj),
+  // checkIsSoterEnrolledInDevice: obj => toPromise(mv.checkIsSoterEnrolledInDevice, obj),
 };
