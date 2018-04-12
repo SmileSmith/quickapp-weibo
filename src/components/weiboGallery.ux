@@ -25,7 +25,15 @@
       this.smalls = this.pics.smalls;
     },
     previewImage(index) {
-      this.$emit('preview', { index, larges: this.pics.larges });
+      /* this.$emit('preview', { index, larges: this.pics.larges }); */
+      this.$app.navigateTo({
+        uri: '/pages/Gallery',
+        params: {
+          larges: this.pics.larges,
+          smalls: this.pics.smalls,
+          index
+        },
+      });
     }
   };
 

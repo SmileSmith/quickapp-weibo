@@ -1,0 +1,138 @@
+<template>
+  <stack class="gallery">
+    <block for="(picIndex, pic) in backPics">
+      <image if="{{showIndex === picIndex}}" class="picture {{enterClass}}" src="{{pic}}" @swipe="changePic()"></image>
+    </block>
+    <progress class="load-progress" type="circular"></progress>
+    <block for="(picIndex, pic) in showPics">
+      <image if="{{showIndex === picIndex}}" class="picture {{enterClass}}" src="{{pic}}" @longpress="longpress" @swipe="changePic()"></image>
+    </block>
+    <div show="{{showIndex > 0}}" class="button left-button" @click="changePic({direction: 'right'})"><text>«</text></div>
+    <div show="{{showIndex < showPics.length - 1}}"  class="button right-button" @click="changePic({direction: 'left'})"><text>»</text></div>
+    <div class="button back-button" @click="closeGallery"><text>︽</text></div>
+  </stack>
+</template>
+
+<script>
+  export default {
+    protected: {
+      larges: '',
+      smalls: '',
+      index: '',
+    },
+    private: {
+      showPics: [],
+      backPics: [],
+      showIndex: 0,
+      enterClass: '',
+    },
+    longpress() {
+
+    },
+    closeGallery() {
+      this.$app.navigateBack();
+    },
+    changePic(evt) {
+      let changeIndex;
+      if (evt.direction === 'left') {
+        this.enterClass = 'rightEnter';
+        changeIndex = this.showIndex + 1;
+      }
+      if (evt.direction === 'right') {
+        this.enterClass = 'leftEnter';
+        changeIndex = this.showIndex - 1;
+      }
+      if (this.showPics[changeIndex]) {
+        this.showIndex = changeIndex;
+      }
+    },
+    onInit() {
+      this.enterClass = 'rightEnter';
+      this.showIndex = eval(this.index);
+      this.showPics = eval(this.larges);
+      this.backPics = eval(this.smalls);
+    }
+  };
+
+</script>
+
+<style scoped>
+  .gallery {
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+  .load-progress {
+    top: 300px;
+    left: 150px;
+    width: 75px;
+    height: 75px;
+    color: #cccccc;
+    opacity: 0.5;
+  }
+  .picture {
+    width: 100%;
+  }
+  .rightEnter {
+    animation-name: rightenter;
+    animation-duration: 200ms;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear;
+  }
+  .leftEnter {
+    animation-name: leftenter;
+    animation-duration: 200ms;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear;
+  }
+  @keyframes rightenter {
+    from {
+      transform: translateX(50px);
+      opacity: 0.3;
+    }
+    to {
+      transform: translateX(0px);
+      opacity: 1;
+    }
+  }
+  @keyframes leftenter {
+    from {
+      transform: translateX(-50px);
+      opacity: 0.7;
+    }
+    to {
+      transform: translateX(0px);
+      opacity: 1;
+    }
+  }
+  .button {
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.5;
+    background-color: #eeeeee;
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+  }
+  .button text {
+    padding-bottom: 10px;
+    color: #e6162d;
+    font-size: 40px;
+  }
+  .left-button {
+    left: 0px;
+    top: 300px;
+  }
+  .right-button {
+    right: 0px;
+    top: 300px;
+  }
+  .back-button {
+    left: 160px;
+    bottom: 10px;
+  }
+  .back-button text {
+    padding-bottom: 20px;
+  }
+</style>

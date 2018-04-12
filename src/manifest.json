@@ -29,6 +29,9 @@
       },
       "pages/About": {
         "component": "index"
+      },
+      "pages/Gallery": {
+        "component": "index"
       }
     }
   },
@@ -42,11 +45,16 @@
         "menu": false
       },
       "pages/Weibo": {
-        "titleBarText": "热门微博",
-        "menu": true
+        "titleBarText": "热门微博"
       },
       "pages/About": {
         "titleBarText": "关于"
+      },
+      "pages/Gallery": {
+        "fullScreen": true,
+        "menu": false,
+        "titleBar": false,
+        "backgroundColor": "#666666"
       }
     }
   }

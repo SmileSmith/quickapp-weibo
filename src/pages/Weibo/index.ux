@@ -3,7 +3,6 @@
 <import name="weibo-gallery" src="../../components/weiboGallery"></import>
 <import name="rich-content" src="../../components/richContent"></import>
 <import name="top-button" src="../../components/topButton"></import>
-<import name="gallery" src="../../components/gallery"></import>
 
 <template>
   <stack>
@@ -32,7 +31,6 @@
     </list>
   </refresh>
   <top-button if="{{showTopButton}}" @click="goTop"></top-button>
-  <gallery if="{{showGallery}}" pics="{{largePics}}" index="{{largePicIndex}}" @click="closeGallery"></gallery>
 </stack>
 </template>
 
@@ -44,9 +42,6 @@
       weiboList: [],
       topLoading: false,
       showTopButton: false,
-      showGallery: false,
-      largePics: [],
-      largePicIndex: 0,
     },
     async onReachBottom() {
       if (this.loading) return;
@@ -115,15 +110,6 @@
         duration: 300
       });
     },
-    openGallery(evt) {
-      this.largePics = evt.detail.larges;
-      this.largePicIndex = evt.detail.index;
-      this.showGallery = true;
-    },
-    closeGallery(evt) {
-      this.largePics = [];
-      this.showGallery = false
-    },
     onScroll(scroll) {
       if (scroll.scrollY <= -10) {
         this.showTopButton = true;
@@ -144,6 +130,9 @@
     onReady() {
       console.info('### Weibo Page ### Ready');
     },
+    onMenuPress() {
+      this.$app.showMenu()
+    }
   };
 </script>
 
