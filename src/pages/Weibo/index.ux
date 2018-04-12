@@ -68,17 +68,9 @@
           page: this.page
         },
       }).then(({ data }) => {
-        try {
-          data = JSON.parse(data);
-          const weiboList = this.filterData(data.data.cards);
-          this.weiboList = top ? weiboList : this.weiboList.concat(weiboList);
-          this.page += 1;
-        } catch (err) {
-          this.$app.showToast({
-            message: '请求数据失败',
-            duration: 500
-          });
-        }
+        const weiboList = this.filterData(data.data.cards);
+        this.weiboList = top ? weiboList : this.weiboList.concat(weiboList);
+        this.page += 1;
       }).catch((err) => {
         this.$app.showToast({
           message: '请求数据失败',

@@ -58,13 +58,36 @@ function createShortcut() {
 }
 
 
+/**
+ * 封装网络请求中的JSON.parse
+ *
+ * @param {any} 请求参数，含url、method、data、header等
+ * @returns Promise
+ */
+function request(obj){
+  return new Promise((resolve, reject) => {
+    fetch.fetch({
+      ...obj,
+      success: (res) =>{
+        try {
+          res.data = JSON.parse(res.data);
+          resolve(res);
+        } catch (err) {
+          console.error(err);
+        }
+      },
+      fail: reject,
+    });
+  });
+}
+
 const wx = wx;
 
 // 全局mv对象
 const mv = {};
 
 if (!wx) {
-  mv.request = fetch.fetch;
+  mv.request = request;
   mv.setStorage = storage.set;
   mv.getStorage = storage.get;
   mv.removeStorage = storage.delete;
@@ -101,7 +124,7 @@ export default {
   createShortcut: mv.createShortcut,
 
   // 网络请求
-  request: (obj) => toPromise(mv.request, obj),
+  request: mv.request,
   // 界面交互
   showToast: obj => toPromise(mv.showToast, obj),
   // showLoading: obj => toPromise(mv.showLoading, obj),
