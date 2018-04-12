@@ -16,7 +16,7 @@ function showMenu() {
         case 1:
           // 关于
           router.push({
-            uri: '/About',
+            uri: '/pages/About',
             params: { name: appInfo.name, icon: appInfo.icon },
           });
           break;

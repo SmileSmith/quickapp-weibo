@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="usermotto">
-      <text if="weiboInfo">微博账号认证成功</text>
+      <text if="weiboInfo">Hello World</text>
     </div>
     <a href="/pages/Weibo" class="weibo">即将打开世界的大门...</a>
   </div>

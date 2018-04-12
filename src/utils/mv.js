@@ -1,6 +1,7 @@
 import fetch from '@system.fetch';
 import storage from '@system.storage';
 import prompt from '@system.prompt';
+import router from '@system.router';
 
 // 全局mv对象
 const mv = {};
@@ -11,7 +12,9 @@ mv.getStorage = storage.get;
 mv.removeStorage = storage.delete;
 mv.showToast = prompt.showToast;
 mv.showModal = prompt.showDialog;
-
+mv.navigateTo = router.push;
+mv.navigateBack = router.back;
+mv.redirectTo = router.replace;
 
 /**
  * Promise转换函数
@@ -43,10 +46,11 @@ export default {
   // setNavigationBarColor: obj => f(mv.setNavigationBarColor, obj),
   // setTopBarText: obj => f(mv.setTopBarText, obj),
   // // 导航
-  // navigateTo: obj => f(mv.navigateTo, obj),
-  // redirectTo: obj => f(mv.redirectTo, obj),
+  navigateTo: obj => toPromise(mv.navigateTo, obj),
+  redirectTo: obj => toPromise(mv.redirectTo, obj),
   // switchTab: obj => f(mv.switchTab, obj),
   // reLaunch: obj => f(mv.reLaunch, obj),
+  navigateBack: obj => toPromise(mv.navigateBack, obj),
 
   // // 用户相关
   // login: obj => f(mv.login, obj),

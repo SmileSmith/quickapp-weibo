@@ -64,10 +64,10 @@ export default {
 <style scoped>
 .rich-content {
   margin: 5px 0;
-  font-size: 16px;
-  line-height: 30px;
+  font-size: 18px;
 }
 .rich-text{
+  line-height: 25px;
   color: #333333;
 }
 .rich-emotion {
